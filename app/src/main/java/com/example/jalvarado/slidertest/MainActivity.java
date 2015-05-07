@@ -22,7 +22,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.daimajia.slider.library.Indicators.PagerIndicator;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.example.jalvarado.slidertest.utils.HttpUtil;
 import com.example.jalvarado.slidertest.utils.NetworkUtil;
 import com.squareup.okhttp.Response;
@@ -35,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BaseSliderView.OnSliderClickListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -48,15 +53,15 @@ public class MainActivity extends AppCompatActivity {
     private int mImageWidth;
 
 
+    private SliderLayout mViewSlider;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mGridView = (GridView) findViewById(R.id.grid_view);
-
-        mImageWidth = getWindowManager().getDefaultDisplay().getWidth()/3;
-        mGridView.setColumnWidth(mImageWidth);
+        mViewSlider = (SliderLayout) findViewById(R.id.slider);
 
         mListingViewPresenter = new ListingViewPresenter();
         mNetworkUtil = new NetworkUtil(this);
@@ -101,66 +106,31 @@ public class MainActivity extends AppCompatActivity {
 
     private void doUIStuff() {
         final List<DetailedListing.ListingImage> images = mDetailedListing.getListingImages();
-        mGridView.setAdapter(new GridViewAdapter(images, mImageWidth));
-        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(MainActivity.this, FullScreenViewActivity.class);
-                intent.putExtra("position", i);
-                intent.putExtra("detailedListing", mDetailedListing);
-                startActivity(intent);
-            }
-        });
 
+        for (DetailedListing.ListingImage listingImage : images){
+            DefaultSliderView sliderView = new DefaultSliderView(this);
+            sliderView.image(listingImage.getFileName())
+                    .setScaleType(BaseSliderView.ScaleType.FitCenterCrop)
+                    .setOnSliderClickListener(this);
+
+            mViewSlider.addSlider(sliderView);
+        }
+        mViewSlider.setPresetTransformer(SliderLayout.Transformer.Default);
+        mViewSlider.setIndicatorVisibility(PagerIndicator.IndicatorVisibility.Invisible);
+        mViewSlider.stopAutoCycle();
     }
 
-    public static class GridViewAdapter extends BaseAdapter {
+    @Override
+    public void onSliderClick(BaseSliderView baseSliderView) {
+        baseSliderView.getBundle();
+        Log.v("YO", baseSliderView.toString() + "");
 
-        private List<DetailedListing.ListingImage> mImagesList;
-        private int imageWidth;
-
-        public GridViewAdapter(List<DetailedListing.ListingImage> imagesList, int imageWidth) {
-            mImagesList = imagesList;
-            imageWidth = imageWidth;
-        }
-
-        @Override
-        public int getCount() {
-            return mImagesList.size();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return "Item " + String.valueOf(i + 1);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-
-            if (view == null) {
-                view = LayoutInflater.from(viewGroup.getContext())
-                        .inflate(R.layout.grid_item, viewGroup, false);
-            }
-
-            String imageUrl = mImagesList.get(i).getFileName();
-            view.setTag(imageUrl);
-
-            ImageView image = (ImageView) view.findViewById(R.id.image);
-
-
-            Picasso.with(view.getContext())
-                    .load(imageUrl)
-                    .into(image);
-
-
-            return view;
-
-        }
+        Intent intent = new Intent(this, FullScreenViewActivity.class);
+        intent.putExtra("position", mViewSlider.getCurrentPosition());
+        intent.putExtra("detailedListing", mDetailedListing);
+        startActivity(intent);
     }
+
+
 
 }

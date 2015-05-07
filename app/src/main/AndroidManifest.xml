@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -22,7 +23,11 @@
         <activity
             android:name=".FullScreenViewActivity"
             android:label="@string/title_activity_full_screen_view"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:theme="@style/Theme.AppCompat.NoActionBar" >
+        </activity>
+        <activity
+            android:name=".AlternativeFullScreenImageActivity"
+            android:label="@string/title_activity_alternative_full_screen_image" >
         </activity>
     </application>
 

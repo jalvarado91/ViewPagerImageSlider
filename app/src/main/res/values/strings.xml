@@ -4,4 +4,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_full_screen_view">FullScreenViewActivity</string>
+    <string name="title_activity_alternative_full_screen_image">AlternativeFullScreenImageActivity
+    </string>
 </resources>
