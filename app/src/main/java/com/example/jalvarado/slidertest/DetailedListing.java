@@ -2465,7 +2465,7 @@ public class DetailedListing implements Parcelable{
         }
 
         @SuppressWarnings("unused")
-        public final Creator<ListingImage> CREATOR = new Creator<ListingImage>() {
+        public static final Creator<ListingImage> CREATOR = new Creator<ListingImage>() {
             @Override
             public ListingImage createFromParcel(Parcel in) {
                 return new ListingImage(in);
